@@ -1,0 +1,75 @@
+<project name="Sample usage of Salesforce Ant tasks" default="startBuild" basedir="." xmlns:sf="antlib:com.salesforce">
+
+    <property file="build.properties"/>
+    <property environment="env"/>    
+	
+	<target name="startBuild"> 
+     <!-- Your Zipping Task-->
+     <antcall target="socialpost"/>
+	 <antcall target="deleteSocialpostfiles"/>
+	 <antcall target="feedItem"/>
+	 <antcall target="deleteFeedItemfiles"/>
+	 <antcall target="globalLayout"/>
+	 <antcall target="deleteGlobalLayout"/>
+	 <antcall target="altuser"/>
+	 <antcall target="delaltUserFiles"/>
+    </target>
+		
+	 <target name="socialpost" >
+        <echo message="updating profiles to remove Social-Post references in ${metadata.root}..." />
+        <replaceregexp match="^    &lt;layoutAssignments&gt;\n        &lt;layout&gt;SocialPost-Social Post Layout&lt;/layout&gt;\n    &lt;/layoutAssignments&gt;$" replace="" flags="gm" byline="false">
+            <fileset dir="${metadata.root}\profiles" includes="**/*.profile" />
+        </replaceregexp>
+    </target>
+  
+    <target name="deleteSocialpostfiles" depends="socialpost">
+        <echo message="deleting Social-Post related files from ${metadata.root}..." />
+        <delete file="${metadata.root}\workflows\SocialPost.workflow"/>
+        <delete file="${metadata.root}\layouts\SocialPost-Social Post Layout.layout"/>
+    </target>
+	
+	<target name="feedItem" >
+        <echo message="updating profiles to remove FeedItem-Feed Item Layout references in ${metadata.root}..." />
+        <replaceregexp match="^    &lt;layoutAssignments&gt;\n        &lt;layout&gt;FeedItem-Feed Item Layout&lt;/layout&gt;\n    &lt;/layoutAssignments&gt;$" replace="" flags="gm" byline="false">
+            <fileset dir="${metadata.root}\profiles" includes="**/*.profile" />
+        </replaceregexp>
+    </target>
+	
+	 <target name="deleteFeedItemfiles" depends="feedItem">
+        <echo message="deleting Feed-Item related files from ${metadata.root}..." />
+        <delete file="${metadata.root}\layouts\FeedItem-Feed Item Layout.layout"/>
+    </target>
+	
+	<target name="globalLayout" >
+        <echo message="updating profiles to remove Global-Global Layout.layout references in ${metadata.root}..." />
+        <replaceregexp match="^    &lt;layoutAssignments&gt;\n        &lt;layout&gt;Global-Global Layout&lt;/layout&gt;\n    &lt;/layoutAssignments&gt;$" replace="" flags="gm" byline="false">
+            <fileset dir="${metadata.root}\profiles" includes="**/*.profile" />
+        </replaceregexp>
+    </target>
+	
+	 <target name="deleteGlobalLayout" depends="globalLayout">
+        <echo message="deleting Global-Global Layout.layout related files from  ${metadata.root}..." />
+        <delete file="${metadata.root}\layouts\Global-Global Layout.layout"/>
+    </target> 
+	
+	<target name="altuser" >
+        <echo message="updating profiles to remove UserAlt-User Profile Layout.layout Layout references in ${metadata.root}..." />
+        <replaceregexp match="^    &lt;layoutAssignments&gt;\n        &lt;layout&gt;UserAlt-User Profile Layout&lt;/layout&gt;\n    &lt;/layoutAssignments&gt;$" replace="" flags="gm" byline="false">
+            <fileset dir="${metadata.root}\profiles" includes="**/*.profile" />
+        </replaceregexp>
+    </target>
+	
+	 <target name="delaltUserFiles" depends="feedItem">
+        <echo message="deleting UserAlt-User Profile  related files from ${metadata.root}..." />
+        <delete file="${metadata.root}\layouts\UserAlt-User Profile Layout.layout"/>
+    </target>
+	
+	
+
+    <!-- Retrieve an unpackaged set of metadata from your org --> 
+    <!-- Deploy the unpackaged set of metadata retrieved with deployUnpackaged -->
+    <target name="deployUnpackaged">
+      <sf:deploy username="${sf.username}" password="${sf.password}" serverurl="${sf.serverurl}" runAllTests="false" deployRoot="DEV6\\src" pollWaitMillis="500000" maxPoll="1000"/>
+    </target>
+    
+</project>
